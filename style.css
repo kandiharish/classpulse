@@ -192,8 +192,8 @@ body {
 }
 
 .large-logo {
-  width: 120px;
-  height: 120px;
+  width: 160px;
+  height: 160px;
   margin: 0 auto 24px auto;
   color: var(--primary);
   filter: drop-shadow(0 0 20px rgba(37, 99, 235, 0.35));
@@ -428,8 +428,8 @@ select {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 42px;
-  height: 42px;
+  width: 48px;
+  height: 48px;
   color: var(--primary);
 }
 
