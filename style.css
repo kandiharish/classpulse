@@ -430,21 +430,10 @@ select {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 160px;
-  height: 160px;
+  width: 44px;
+  height: 44px;
   color: var(--primary);
-  position: relative;
-  z-index: 1010;
-  margin-top: 25px;
   transition: width var(--transition-normal), height var(--transition-normal);
-}
-
-@media (max-width: 600px) {
-  .logo-wrapper {
-    width: 100px;
-    height: 100px;
-    margin-top: 10px;
-  }
 }
 
 /* Brand Text Custom Colors */
