@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>ClassPulse - Smart Attendance. Instantly Shared.</title>
+  
+  <!-- Google Fonts - Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Material Symbols Outlined for modern icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-theme="light">
+
+  <!-- Blurred mesh background blobs for premium aesthetic -->
+  <div class="mesh-background">
+    <div class="mesh-blob blob-1"></div>
+    <div class="mesh-blob blob-2"></div>
+    <div class="mesh-blob blob-3"></div>
+  </div>
+
+  <!-- Splash Screen -->
+  <div id="splash-screen" class="splash-overlay">
+    <div class="splash-content">
+      <div class="logo-wrapper large-logo">
+        <svg class="app-logo" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z" fill="currentColor"/>
+          <path d="M12 6C8.69 6 6 8.69 6 12C6 13.01 6.25 13.97 6.7 14.8L5.22 16.28C4.45 15.06 4 13.58 4 12C4 7.58 7.58 4 12 4C13.58 4 15.06 4.45 16.28 5.22L14.8 6.7C13.97 6.25 13.01 6 12 6Z" fill="url(#logo-gradient-splash)"/>
+          <defs>
+            <linearGradient id="logo-gradient-splash" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#60A5FA" />
+              <stop offset="1" stop-color="#2563EB" />
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <h1 class="splash-title">ClassPulse</h1>
+      <p class="splash-tagline">Smart Attendance. Instantly Shared.</p>
+      <div class="splash-loader">
+        <div class="loader-dot"></div>
+        <div class="loader-dot"></div>
+        <div class="loader-dot"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Access Control Gate Lock Screen -->
+  <div id="access-gate" class="access-gate-overlay" style="display: none;">
+    <div class="access-gate-card">
+      <div class="gate-header">
+        <span class="material-symbols-outlined gate-logo-icon">lock</span>
+        <h2>Authorized Access Only</h2>
+        <p>Log in as Class Representative (CR) or Mentor to access ClassPulse.</p>
+      </div>
+      <form id="access-form" class="gate-form">
+        <div class="input-group">
+          <label for="gate-role"><span class="material-symbols-outlined label-icon">badge</span> Your Role</label>
+          <select id="gate-role" required>
+            <option value="" disabled selected>Select role...</option>
+            <option value="cr">Class Representative (CR)</option>
+            <option value="mentor">Mentor</option>
+          </select>
+        </div>
+        
+        <div class="gate-inline-grid">
+          <div class="input-group">
+            <label for="gate-year">Year</label>
+            <select id="gate-year" required>
+              <option value="I">I</option>
+              <option value="II">II</option>
+              <option value="III">III</option>
+              <option value="IV" selected>IV</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label for="gate-class">Class</label>
+            <input type="text" id="gate-class" value="CSE" required placeholder="e.g. CSE">
+          </div>
+          <div class="input-group">
+            <label for="gate-section">Section</label>
+            <input type="text" id="gate-section" value="B" required placeholder="e.g. B">
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label for="gate-id-roll"><span id="gate-id-label">Roll Number</span></label>
+          <input type="text" id="gate-id-roll" placeholder="Enter your Roll No / ID" required>
+        </div>
+
+        <div class="input-group">
+          <label for="gate-password">Password</label>
+          <input type="password" id="gate-password" placeholder="••••••••" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block" style="margin-top: 10px;">
+          <span class="material-symbols-outlined">key</span> Unlock Application
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Header Component -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand">
+        <div class="logo-wrapper">
+          <svg class="app-logo" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z" fill="currentColor"/>
+            <path d="M12 6C8.69 6 6 8.69 6 12C6 13.01 6.25 13.97 6.7 14.8L5.22 16.28C4.45 15.06 4 13.58 4 12C4 7.58 7.58 4 12 4C13.58 4 15.06 4.45 16.28 5.22L14.8 6.7C13.97 6.25 13.01 6 12 6Z" fill="url(#logo-gradient)"/>
+            <defs>
+              <linearGradient id="logo-gradient" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#60A5FA" />
+                <stop offset="1" stop-color="#2563EB" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>ClassPulse</h1>
+          <p class="tagline">Smart Attendance. Instantly Shared.</p>
+        </div>
+      </div>
+
+      
+      <!-- Top Navigation Menu (Desktop Only) -->
+      <nav class="desktop-nav">
+        <button class="nav-btn active" data-tab="home">
+          <span class="material-symbols-outlined">home</span><span>Home</span>
+        </button>
+        <button class="nav-btn" data-tab="students">
+          <span class="material-symbols-outlined">groups</span><span>Students</span>
+        </button>
+        <button class="nav-btn" data-tab="permissions">
+          <span class="material-symbols-outlined">verified_user</span><span>Permissions</span>
+        </button>
+        <button class="nav-btn" data-tab="history">
+          <span class="material-symbols-outlined">history</span><span>History</span>
+        </button>
+        <button class="nav-btn" data-tab="settings">
+          <span class="material-symbols-outlined">settings</span><span>Settings</span>
+        </button>
+      </nav>
+
+      <div class="header-right">
+        <div class="time-widget">
+          <span id="header-date">--/--/----</span>
+          <span class="separator">•</span>
+          <span id="header-time">00:00:00</span>
+        </div>
+        <button id="dark-mode-toggle" class="icon-btn" aria-label="Toggle Dark Mode">
+          <span class="material-symbols-outlined">dark_mode</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="app-content">
+    
+    <!-- 1. HOME TAB PANEL -->
+    <section id="tab-home" class="tab-panel active">
+      <div class="welcome-header">
+        <h2 class="welcome-title">Good Morning, <span id="cr-welcome-name">Harish</span> 👋</h2>
+        <p class="welcome-subtitle">Let's take attendance today.</p>
+      </div>
+
+      <div class="dashboard-meta-grid">
+        <!-- Date Selector Card -->
+        <div class="card meta-card">
+          <span class="material-symbols-outlined meta-card-icon">calendar_today</span>
+          <div class="meta-card-info">
+            <span class="meta-card-label">Active Session Date</span>
+            <span id="display-dashboard-date" class="meta-card-value">07 May 2025, Wed</span>
+          </div>
+        </div>
+
+        <!-- Class Selector Card -->
+        <div class="card meta-card">
+          <span class="material-symbols-outlined meta-card-icon">school</span>
+          <div class="meta-card-info">
+            <span class="meta-card-label">Current Class Group</span>
+            <span id="display-dashboard-class" class="meta-card-value">IV CSE - B</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Home Dashboard Analytics Grid -->
+      <div class="home-analytics-layout">
+        <!-- Four Metric Grid -->
+        <div class="metrics-grid">
+          <div class="card metric-card present">
+            <div class="metric-icon present-icon">
+              <span class="material-symbols-outlined">check_circle</span>
+            </div>
+            <div class="metric-data">
+              <h3 id="home-stat-present" class="metric-value">68</h3>
+              <span class="metric-title">Present</span>
+            </div>
+          </div>
+
+          <div class="card metric-card absent">
+            <div class="metric-icon absent-icon">
+              <span class="material-symbols-outlined">cancel</span>
+            </div>
+            <div class="metric-data">
+              <h3 id="home-stat-absent" class="metric-value">03</h3>
+              <span class="metric-title">Absent</span>
+            </div>
+          </div>
+
+          <div class="card metric-card permission">
+            <div class="metric-icon permission-icon">
+              <span class="material-symbols-outlined">verified_user</span>
+            </div>
+            <div class="metric-data">
+              <h3 id="home-stat-permission" class="metric-value">02</h3>
+              <span class="metric-title">Permission</span>
+            </div>
+          </div>
+
+          <div class="card metric-card total">
+            <div class="metric-icon total-icon">
+              <span class="material-symbols-outlined">groups</span>
+            </div>
+            <div class="metric-data">
+              <h3 id="home-stat-total" class="metric-value">73</h3>
+              <span class="metric-title">Total Students</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Circular gauge percentage card -->
+        <div class="card progress-card flex-row-card">
+          <div class="progress-details-left">
+            <span class="progress-card-label">Attendance Percentage</span>
+            <h2 id="home-percentage-value" class="progress-card-value">93.2%</h2>
+          </div>
+          <div class="progress-circle-wrapper">
+            <svg class="circular-progress" viewBox="0 0 100 100">
+              <circle class="bg-circle" cx="50" cy="50" r="40"></circle>
+              <circle id="home-progress-indicator" class="indicator-circle" cx="50" cy="50" r="40"></circle>
+            </svg>
+            <div class="progress-value">
+              <span class="material-symbols-outlined progress-check-icon">done_all</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Today's Absentees scrolling banner -->
+      <div class="card absentees-banner">
+        <div class="absentees-banner-header">
+          <span class="absentees-banner-title">
+            <span class="material-symbols-outlined">warning</span> Today's Absentees
+          </span>
+          <button id="btn-view-absentees-list" class="view-all-link">View All <span class="material-symbols-outlined">chevron_right</span></button>
+        </div>
+        <div id="home-absentees-chips" class="absentees-chips-scroll">
+          <!-- Dynamically populated red chips (e.g. 12 Karthik) -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. STUDENTS TAB PANEL (ATTENDANCE SCREEN) -->
+    <section id="tab-students" class="tab-panel">
+      <div class="tab-view-header">
+        <div>
+          <h2 id="students-class-title" class="view-title">IV CSE - B</h2>
+          <p id="students-total-label" class="view-subtitle">73 Students</p>
+        </div>
+        <div class="quick-actions-bar">
+          <button id="btn-students-present-all" class="btn btn-outline success btn-sm">
+            <span class="material-symbols-outlined">check_all</span> Present All
+          </button>
+          <button id="btn-students-absent-all" class="btn btn-outline danger btn-sm">
+            <span class="material-symbols-outlined">close</span> Absent All
+          </button>
+          <button id="btn-students-invert" class="btn btn-outline warning btn-sm">
+            <span class="material-symbols-outlined">swap_horiz</span> Invert
+          </button>
+        </div>
+      </div>
+
+      <!-- Search & Filters Container -->
+      <div class="search-filters-card card">
+        <div class="search-input-wrapper">
+          <span class="material-symbols-outlined search-icon">search</span>
+          <input type="text" id="students-search-input" placeholder="Search by name, roll no, short roll...">
+          <button id="btn-clear-students-search" class="clear-btn" style="display: none;">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        <div class="filter-chips-row">
+          <button class="filter-chip active" data-filter="all">All (<span id="filter-count-all">0</span>)</button>
+          <button class="filter-chip" data-filter="present">Present (<span id="filter-count-present">0</span>)</button>
+          <button class="filter-chip" data-filter="absent">Absent (<span id="filter-count-absent">0</span>)</button>
+        </div>
+      </div>
+
+      <!-- Student cards list container -->
+      <div id="students-list-container" class="student-list">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <!-- Bottom Floating Call To Action Tray -->
+      <div class="students-bottom-cta">
+        <div class="students-action-tray">
+          <button id="btn-students-generate" class="btn btn-primary flex-btn" style="flex: 2;">
+            <span class="material-symbols-outlined">description</span>
+            <span>Generate Report</span>
+          </button>
+          <button id="btn-students-copy" class="btn btn-outline success flex-btn" style="flex: 1;" title="Copy Report">
+            <span class="material-symbols-outlined">content_copy</span>
+            <span>Copy</span>
+          </button>
+          <button id="btn-students-whatsapp" class="btn btn-outline success flex-btn" style="flex: 1; color: var(--success); border-color: rgba(34, 197, 94, 0.3);" title="WhatsApp Share">
+            <span class="material-symbols-outlined">share</span>
+            <span>WhatsApp</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. PERMISSIONS TAB PANEL -->
+    <section id="tab-permissions" class="tab-panel">
+      <div class="tab-view-header">
+        <div>
+          <h2 class="view-title">Permission Students</h2>
+          <p class="view-subtitle">Manage students with official permissions (Internship, Medical, Placement, etc.)</p>
+        </div>
+      </div>
+
+      <!-- Add Permission Card -->
+      <div class="card add-permission-card">
+        <h3 class="sub-block-title">Grant Permission Exemption</h3>
+        <p class="section-subtitle">Exempted students are excluded from regular absentees and highlighted separately in the report.</p>
+        
+        <form id="permission-entry-form" class="permission-entry-form">
+          <div class="permission-form-grid">
+            <div class="input-group" style="position: relative;">
+              <label for="perm-student-search"><span class="material-symbols-outlined label-icon">person</span> Student Search</label>
+              <div class="search-input-wrapper">
+                <input type="text" id="perm-student-search" placeholder="Type name or roll no..." required>
+                <button type="button" id="btn-clear-perm-search" class="clear-btn" style="display: none;">
+                  <span class="material-symbols-outlined">close</span>
+                </button>
+              </div>
+              <ul id="perm-student-suggestions" class="suggestions-list" style="display: none;"></ul>
+            </div>
+
+            <div class="input-group">
+              <label for="perm-type-select"><span class="material-symbols-outlined label-icon">verified_user</span> Exemption Type</label>
+              <select id="perm-type-select" required>
+                <option value="Internship">Internship</option>
+                <option value="Medical Leave">Medical Leave</option>
+                <option value="Placement Drive">Placement Drive</option>
+                <option value="Sports Duty">Sports Duty</option>
+                <option value="Other">Other Duty</option>
+              </select>
+            </div>
+
+            <div class="input-group" style="grid-column: span 2;">
+              <label for="perm-note-input"><span class="material-symbols-outlined label-icon">notes</span> Description / Note</label>
+              <input type="text" id="perm-note-input" placeholder="e.g. 2 weeks training program, Fever and rest, TCS Drive..." required>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block" style="margin-top: 10px;">
+            <span class="material-symbols-outlined">add_circle</span> Add Permission Exemption
+          </button>
+        </form>
+      </div>
+
+      <!-- Permission Students List -->
+      <div class="permissions-list-section">
+        <h3 class="section-title">Students with Active Permissions</h3>
+        <div id="permissions-cards-container" class="permissions-cards-grid">
+          <!-- Dynamically populated permission cards (mockup-style) -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. HISTORY TAB PANEL -->
+    <section id="tab-history" class="tab-panel">
+      <div class="tab-view-header">
+        <div>
+          <h2 class="view-title">Attendance History</h2>
+          <p class="view-subtitle">Review, copy, and retrieve past attendance logs.</p>
+        </div>
+      </div>
+
+      <!-- Calendar Strip Mockup Card -->
+      <div class="card calendar-strip-card">
+        <div class="calendar-header-row">
+          <button class="icon-btn-sm"><span class="material-symbols-outlined">chevron_left</span></button>
+          <span class="calendar-month-title">May 2025</span>
+          <button class="icon-btn-sm"><span class="material-symbols-outlined">chevron_right</span></button>
+        </div>
+        <div class="calendar-days-strip">
+          <div class="calendar-day-item"><span>Mon</span><strong>5</strong></div>
+          <div class="calendar-day-item"><span>Tue</span><strong>6</strong></div>
+          <div class="calendar-day-item active"><span>Wed</span><strong>7</strong></div>
+          <div class="calendar-day-item"><span>Thu</span><strong>8</strong></div>
+          <div class="calendar-day-item"><span>Fri</span><strong>9</strong></div>
+          <div class="calendar-day-item"><span>Sat</span><strong>10</strong></div>
+          <div class="calendar-day-item"><span>Sun</span><strong>11</strong></div>
+        </div>
+      </div>
+
+      <div class="history-layout-split">
+        <!-- History logs list -->
+        <div class="history-list-box">
+          <h3 class="section-title">Recent Reports</h3>
+          <div id="history-reports-container" class="history-reports-grid">
+            <!-- Dynamically populated past records -->
+          </div>
+        </div>
+
+        <!-- Generated Live Report Preview Container -->
+        <div class="history-report-preview-box">
+          <!-- Report Preview Section -->
+          <section id="report-section" class="report-section card" style="display: none;">
+            <div class="report-header">
+              <h2 class="section-title">Generated Attendance Report</h2>
+              <span class="badge success-badge">Ready</span>
+            </div>
+            <div class="report-preview-box-inner">
+              <pre id="report-text-preview"></pre>
+            </div>
+            <div class="report-actions-grid">
+              <button id="btn-copy-report" class="btn btn-primary">
+                <span class="material-symbols-outlined">content_copy</span> Copy Report
+              </button>
+              <button id="btn-whatsapp-share" class="btn btn-success">
+                <span class="material-symbols-outlined">share</span> WhatsApp Share
+              </button>
+              <button id="btn-download-txt" class="btn btn-secondary">
+                <span class="material-symbols-outlined">download</span> Download TXT
+              </button>
+              <button id="btn-print-report" class="btn btn-secondary">
+                <span class="material-symbols-outlined">print</span> Print
+              </button>
+            </div>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. SETTINGS TAB PANEL -->
+    <section id="tab-settings" class="tab-panel">
+      <div class="tab-view-header">
+        <div>
+          <h2 class="view-title">Settings & Profiles</h2>
+          <p class="view-subtitle">Manage class configs, CR/Mentor profiles, and system databases.</p>
+        </div>
+      </div>
+
+      <!-- Config Cards List -->
+      <div class="settings-grid-layout">
+        
+        <!-- Editable metadata list -->
+        <div class="card settings-list-card">
+          <div class="settings-list-item">
+            <span class="material-symbols-outlined item-icon">school</span>
+            <div class="item-text">
+              <h4>Class Name</h4>
+              <p id="settings-display-classname">IV CSE - B</p>
+            </div>
+            <button id="btn-edit-classname" class="icon-btn-sm"><span class="material-symbols-outlined">chevron_right</span></button>
+          </div>
+
+          <div class="settings-list-item">
+            <span class="material-symbols-outlined item-icon">groups</span>
+            <div class="item-text">
+              <h4>Total Strength</h4>
+              <p id="settings-display-strength">73 Students</p>
+            </div>
+            <span class="badge badge-outline">Auto</span>
+          </div>
+
+          <div class="settings-list-item">
+            <span class="material-symbols-outlined item-icon">dark_mode</span>
+            <div class="item-text">
+              <h4>Dark Mode Theme</h4>
+              <p>Toggle dark display interface</p>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="settings-darkmode-toggle">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Class Faculty & Coordinators DISPLAY card with inline pen icons -->
+        <div id="contacts-display-section" class="contacts-display-section card">
+          <h3 class="section-title"><span class="material-symbols-outlined">contact_phone</span> Class Faculty & Coordinators</h3>
+          <div class="contacts-display-grid">
+            <!-- Mentor Box -->
+            <div class="contact-display-item mentor-box" data-contact-type="mentor">
+              <div class="contact-header-row">
+                <span class="contact-label">Mentor</span>
+                <button class="edit-contact-btn" data-target="mentor" aria-label="Edit Mentor Details">
+                  <span class="material-symbols-outlined">edit</span>
+                </button>
+              </div>
+              <div class="contact-profile-card">
+                <div class="contact-avatar mentor-avatar" id="avatar-mentor">M</div>
+                <div class="contact-details-box">
+                  <h3 id="display-mentor-name" class="contact-name">Not Assigned</h3>
+                  <a id="link-mentor-phone" href="#" class="contact-phone-badge">
+                    <span class="material-symbols-outlined">call</span>
+                    <span id="display-mentor-mobile">--</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- CR Pair 1 Card -->
+            <div class="contact-pair-card">
+              <h4 class="pair-title">CR Pair A</h4>
+              <div class="pair-grid">
+                <div class="contact-display-item cr-box" data-contact-type="cr1">
+                  <div class="contact-header-row">
+                    <span class="contact-label">CR 1</span>
+                    <button class="edit-contact-btn" data-target="cr1" aria-label="Edit CR 1 Details">
+                      <span class="material-symbols-outlined">edit</span>
+                    </button>
+                  </div>
+                  <div class="contact-profile-card">
+                    <div class="contact-avatar cr-avatar" id="avatar-cr1">C1</div>
+                    <div class="contact-details-box">
+                      <h3 id="display-cr1-name" class="contact-name">Not Assigned</h3>
+                      <a id="link-cr1-phone" href="#" class="contact-phone-badge">
+                        <span class="material-symbols-outlined">call</span>
+                        <span id="display-cr1-mobile">--</span>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="contact-display-item cr-box" data-contact-type="cr2">
+                  <div class="contact-header-row">
+                    <span class="contact-label">CR 2</span>
+                    <button class="edit-contact-btn" data-target="cr2" aria-label="Edit CR 2 Details">
+                      <span class="material-symbols-outlined">edit</span>
+                    </button>
+                  </div>
+                  <div class="contact-profile-card">
+                    <div class="contact-avatar cr-avatar" id="avatar-cr2">C2</div>
+                    <div class="contact-details-box">
+                      <h3 id="display-cr2-name" class="contact-name">Not Assigned</h3>
+                      <a id="link-cr2-phone" href="#" class="contact-phone-badge">
+                        <span class="material-symbols-outlined">call</span>
+                        <span id="display-cr2-mobile">--</span>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- CR Pair 2 Card -->
+            <div class="contact-pair-card">
+              <h4 class="pair-title">CR Pair B</h4>
+              <div class="pair-grid">
+                <div class="contact-display-item cr-box" data-contact-type="cr3">
+                  <div class="contact-header-row">
+                    <span class="contact-label">CR 3</span>
+                    <button class="edit-contact-btn" data-target="cr3" aria-label="Edit CR 3 Details">
+                      <span class="material-symbols-outlined">edit</span>
+                    </button>
+                  </div>
+                  <div class="contact-profile-card">
+                    <div class="contact-avatar cr-avatar" id="avatar-cr3">C3</div>
+                    <div class="contact-details-box">
+                      <h3 id="display-cr3-name" class="contact-name">Not Assigned</h3>
+                      <a id="link-cr3-phone" href="#" class="contact-phone-badge">
+                        <span class="material-symbols-outlined">call</span>
+                        <span id="display-cr3-mobile">--</span>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="contact-display-item cr-box" data-contact-type="cr4">
+                  <div class="contact-header-row">
+                    <span class="contact-label">CR 4</span>
+                    <button class="edit-contact-btn" data-target="cr4" aria-label="Edit CR 4 Details">
+                      <span class="material-symbols-outlined">edit</span>
+                    </button>
+                  </div>
+                  <div class="contact-profile-card">
+                    <div class="contact-avatar cr-avatar" id="avatar-cr4">C4</div>
+                    <div class="contact-details-box">
+                      <h3 id="display-cr4-name" class="contact-name">Not Assigned</h3>
+                      <a id="link-cr4-phone" href="#" class="contact-phone-badge">
+                        <span class="material-symbols-outlined">call</span>
+                        <span id="display-cr4-mobile">--</span>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Utilities Action Card -->
+        <div class="card utilities-card">
+          <h3 class="sub-block-title">Database Utilities</h3>
+          <div class="utilities-actions-grid">
+            <button id="btn-export-data" class="btn btn-secondary">
+              <span class="material-symbols-outlined">upload</span> Export Data
+            </button>
+            <button id="btn-import-data" class="btn btn-secondary">
+              <span class="material-symbols-outlined">download</span> Import Students
+            </button>
+            <button id="btn-backup-restore" class="btn btn-secondary">
+              <span class="material-symbols-outlined">backup</span> Backup & Restore
+            </button>
+            <button id="btn-about-app" class="btn btn-secondary">
+              <span class="material-symbols-outlined">info</span> About ClassPulse v1.0.0
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Glassmorphic Edit Contact Modal -->
+  <div id="edit-contact-modal" class="voice-modal-overlay" style="display: none;">
+    <div class="voice-modal-card glass-modal">
+      <div class="voice-modal-header">
+        <span class="material-symbols-outlined voice-logo">edit_calendar</span>
+        <h2 id="edit-modal-title">Edit Contact Details</h2>
+        <p class="section-subtitle">Update Name and Mobile number. Changes persist for this class session.</p>
+      </div>
+      <form id="edit-contact-form" class="gate-form">
+        <input type="hidden" id="edit-contact-target" value="">
+        <div class="input-group">
+          <label for="edit-contact-name">Full Name</label>
+          <input type="text" id="edit-contact-name" placeholder="Enter name" required>
+        </div>
+        <div class="input-group">
+          <label for="edit-contact-mobile">Mobile Number</label>
+          <input type="tel" id="edit-contact-mobile" placeholder="10-digit number" pattern="[0-9]{10}">
+        </div>
+        
+        <div style="display: flex; gap: 10px; margin-top: 10px;">
+          <button type="submit" class="btn btn-primary" style="flex: 1;">Save Changes</button>
+          <button type="button" id="btn-close-edit-modal" class="btn btn-secondary" style="flex: 1;">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Voice Mode Modal (In Development Overlay) -->
+  <div id="voice-modal" class="voice-modal-overlay" style="display: none;">
+    <div class="voice-modal-card">
+      <div class="voice-modal-header">
+        <span class="material-symbols-outlined voice-logo">mic</span>
+        <h2>Roll Call Voice Mode</h2>
+        <span class="badge dev-badge big-badge">Important Meeting / Development Mode</span>
+      </div>
+      <div class="voice-modal-body">
+        <p>This premium feature is currently being designed and developed for ClassPulse.</p>
+        <div class="dev-feature-showcase">
+          <div class="feature-item">
+            <span class="material-symbols-outlined">record_voice_over</span>
+            <div>
+              <h4>Voice Call Activation</h4>
+              <p>Call out students names/roll numbers automatically using web synthesis speech.</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <span class="material-symbols-outlined">hearing</span>
+            <div>
+              <h4>Hands-Free Speech Input</h4>
+              <p>Speak "Present", "Absent", or "Internship" to mark attendance without tapping.</p>
+            </div>
+          </div>
+        </div>
+        <p class="status-disclaimer">⚠️ Integration & testing will commence in the next sprint.</p>
+      </div>
+      <button id="btn-close-voice-modal" class="btn btn-secondary btn-block">Close Preview</button>
+    </div>
+  </div>
+
+  <!-- Sticky Bottom Navigation Bar (Mobile Only) -->
+  <div class="bottom-action-bar mobile-only-nav">
+    <div class="bottom-nav-container">
+      <button class="nav-btn active" data-tab="home">
+        <span class="material-symbols-outlined">home</span>
+        <span class="nav-text">Home</span>
+      </button>
+      <button class="nav-btn" data-tab="students">
+        <span class="material-symbols-outlined">groups</span>
+        <span class="nav-text">Students</span>
+      </button>
+      
+      <!-- Central Floating Action Button to quickly generate or add exemption -->
+      <div class="fab-wrapper">
+        <button id="btn-mobile-fab" class="btn-fab-nav" aria-label="Generate Report">
+          <span class="material-symbols-outlined">add</span>
+        </button>
+      </div>
+      
+      <button class="nav-btn" data-tab="permissions">
+        <span class="material-symbols-outlined">verified_user</span>
+        <span class="nav-text">Permission</span>
+      </button>
+      <button class="nav-btn" data-tab="history">
+        <span class="material-symbols-outlined">history</span>
+        <span class="nav-text">History</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Toast Notification System -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Load Scripts -->
+  <script src="students.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
