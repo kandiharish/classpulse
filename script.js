@@ -186,6 +186,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderStudents();
     renderPermissionCards();
     renderHistoryLogs();
+    renderCalendarStrip();
   }
 });
 
@@ -1339,5 +1340,56 @@ function copyToClipboard(text) {
       document.body.removeChild(textarea);
       return Promise.reject(err);
     }
+  }
+}
+
+function renderCalendarStrip() {
+  const strip = document.querySelector(".calendar-days-strip");
+  const monthTitle = document.querySelector(".calendar-month-title");
+  if (!strip) return;
+
+  strip.innerHTML = "";
+  const today = new Date();
+  
+  const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  if (monthTitle) {
+    monthTitle.textContent = `${months[today.getMonth()]} ${today.getFullYear()}`;
+  }
+
+  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  for (let i = -3; i <= 3; i++) {
+    const d = new Date();
+    d.setDate(today.getDate() + i);
+
+    const dayItem = document.createElement("div");
+    dayItem.className = `calendar-day-item${i === 0 ? " active" : ""}`;
+    dayItem.setAttribute("data-date", d.toISOString().split('T')[0]);
+
+    dayItem.innerHTML = `
+      <span>${days[d.getDay()]}</span>
+      <strong>${d.getDate()}</strong>
+    `;
+
+    dayItem.addEventListener("click", () => {
+      triggerHaptic();
+      document.querySelectorAll(".calendar-day-item").forEach(item => item.classList.remove("active"));
+      dayItem.classList.add("active");
+
+      const dateKey = formatDateString(d);
+      const found = state.history.find(h => h.date === dateKey && h.className === state.className);
+      
+      const textPreview = document.getElementById("report-text-preview");
+      const repSection = document.getElementById("report-section");
+      
+      if (found) {
+        textPreview.textContent = found.reportText;
+        repSection.style.display = "flex";
+      } else {
+        textPreview.textContent = `No report available for user on that date`;
+        repSection.style.display = "flex";
+      }
+    });
+
+    strip.appendChild(dayItem);
   }
 }
