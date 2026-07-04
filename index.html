@@ -290,20 +290,29 @@
       </div>
 
       <!-- Bottom Floating Call To Action Tray -->
-      <div class="students-bottom-cta">
-        <div class="students-action-tray">
-          <button id="btn-students-generate" class="btn btn-primary flex-btn" style="flex: 2;">
-            <span class="material-symbols-outlined">description</span>
-            <span>Generate Report</span>
-          </button>
-          <button id="btn-students-copy" class="btn btn-outline success flex-btn" style="flex: 1;" title="Copy Report">
-            <span class="material-symbols-outlined">content_copy</span>
-            <span>Copy</span>
-          </button>
-          <button id="btn-students-whatsapp" class="btn btn-outline success flex-btn" style="flex: 1; color: var(--success); border-color: rgba(34, 197, 94, 0.3);" title="WhatsApp Share">
-            <span class="material-symbols-outlined">share</span>
-            <span>WhatsApp</span>
-          </button>
+      <div class="students-bottom-cta" style="flex-direction: column; align-items: center;">
+        <!-- Step 1: Big Generate Report Button -->
+        <button id="btn-students-generate" class="btn btn-primary btn-block flex-btn" style="padding: 14px 20px; font-size: 0.9rem; border-radius: var(--radius-md);">
+          <span class="material-symbols-outlined">description</span>
+          <span>Generate Report</span>
+        </button>
+
+        <!-- Step 2: Collapsible Report Preview Card -->
+        <div id="students-report-card" class="card" style="display: none; margin-top: 16px; flex-direction: column; gap: 12px; width: 100%; text-align: left; background: var(--bg-card); border-radius: var(--radius-md);">
+          <h3 style="font-size: 0.85rem; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 6px; margin: 0;">
+            <span class="material-symbols-outlined" style="color: var(--primary);">description</span> Attendance Report Preview
+          </h3>
+          <div id="students-report-text" style="font-family: monospace; font-size: 0.76rem; background: var(--input-bg); padding: 14px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); white-space: pre-wrap; word-break: break-all; color: var(--text-primary); line-height: 1.45;"></div>
+          <div class="students-report-actions" style="display: flex; gap: 12px; width: 100%;">
+            <button id="btn-students-copy" class="btn btn-outline success flex-btn" style="flex: 1; border-radius: var(--radius-sm);" title="Copy Report">
+              <span class="material-symbols-outlined">content_copy</span>
+              <span>Copy</span>
+            </button>
+            <button id="btn-students-whatsapp" class="btn btn-outline success flex-btn" style="flex: 1; color: var(--success); border-color: rgba(34, 197, 94, 0.3); border-radius: var(--radius-sm);" title="WhatsApp Share">
+              <span class="material-symbols-outlined">share</span>
+              <span>WhatsApp</span>
+            </button>
+          </div>
         </div>
       </div>
     </section>

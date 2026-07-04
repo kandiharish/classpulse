@@ -73,6 +73,8 @@ const btnStudentsInvert = document.getElementById("btn-students-invert");
 const btnStudentsGenerate = document.getElementById("btn-students-generate");
 const btnStudentsCopy = document.getElementById("btn-students-copy");
 const btnStudentsWhatsapp = document.getElementById("btn-students-whatsapp");
+const studentsReportCard = document.getElementById("students-report-card");
+const studentsReportText = document.getElementById("students-report-text");
 const studentsSearchInput = document.getElementById("students-search-input");
 const btnClearStudentsSearch = document.getElementById("btn-clear-students-search");
 const studentsListContainer = document.getElementById("students-list-container");
@@ -521,8 +523,12 @@ function updateCounts() {
   displayDashboardClass.textContent = state.className;
 
   // 5. Auto-update report preview text
+  const reportContent = generateReportText();
   if (reportTextPreview) {
-    reportTextPreview.textContent = generateReportText();
+    reportTextPreview.textContent = reportContent;
+  }
+  if (studentsReportText) {
+    studentsReportText.textContent = reportContent;
   }
 }
 
@@ -1003,13 +1009,19 @@ function initEventListeners() {
   btnStudentsAbsentAll.addEventListener("click", studentsMarkAllAbsent);
   btnStudentsInvert.addEventListener("click", studentsInvertSelection);
   btnStudentsGenerate.addEventListener("click", () => {
-    handleGenerateReport();
-    switchTab("history"); // Auto switch tab to show the generated preview
+    handleGenerateReport(); // Also registers in History log
+    
+    // Toggle the inline report card on Students tab
+    if (studentsReportText && studentsReportCard) {
+      studentsReportText.textContent = generateReportText();
+      studentsReportCard.style.display = "flex";
+      studentsReportCard.scrollIntoView({ behavior: "smooth" });
+    }
   });
 
   btnStudentsCopy.addEventListener("click", () => {
     triggerHaptic();
-    const text = generateReportText();
+    const text = studentsReportText ? studentsReportText.textContent : generateReportText();
     copyToClipboard(text).then(() => {
       showToast("📋 Report copied to clipboard!");
     }).catch(err => {
@@ -1020,7 +1032,7 @@ function initEventListeners() {
 
   btnStudentsWhatsapp.addEventListener("click", () => {
     triggerHaptic();
-    const text = encodeURIComponent(generateReportText());
+    const text = encodeURIComponent(studentsReportText ? studentsReportText.textContent : generateReportText());
     window.open(`https://api.whatsapp.com/send?text=${text}`, "_blank");
   });
 
