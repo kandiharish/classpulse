@@ -52,7 +52,6 @@ const headerTimeEl = document.getElementById("header-time");
 const darkModeToggle = document.getElementById("dark-mode-toggle");
 
 // Home tab elements
-const crWelcomeName = document.getElementById("cr-welcome-name");
 const displayDashboardDate = document.getElementById("display-dashboard-date");
 const displayDashboardClass = document.getElementById("display-dashboard-class");
 const homeStatPresent = document.getElementById("home-stat-present");
@@ -395,10 +394,8 @@ function renderContacts() {
   avatarCr4.textContent = getInitials(state.cr4Name || "C4");
   linkCr4Phone.href = state.cr4Mobile ? `tel:${state.cr4Mobile}` : "#";
 
-  // Sync welcome card header greeting CR name
-  if (state.cr1Name) {
-    crWelcomeName.textContent = state.cr1Name;
-  }
+  // Sync welcome card header greeting based on time of day
+  updateGreeting();
 }
 
 /* ==========================================================================
@@ -1392,4 +1389,18 @@ function renderCalendarStrip() {
 
     strip.appendChild(dayItem);
   }
+}
+
+function updateGreeting() {
+  const greetingEl = document.getElementById("home-greeting-text");
+  if (!greetingEl) return;
+
+  const hour = new Date().getHours();
+  let text = "Good Morning";
+  if (hour >= 12 && hour < 17) {
+    text = "Good Afternoon";
+  } else if (hour >= 17 || hour < 4) {
+    text = "Good Evening";
+  }
+  greetingEl.textContent = `${text} 👋`;
 }
