@@ -861,15 +861,6 @@ function generateReportText() {
   const stats = calculateStats();
   const dateStr = formatDateString(state.date);
 
-  // Presentees list
-  const presentees = [];
-  activeStudents.forEach(s => {
-    const isExempt = state.specialPermissions.some(p => p.hallTicket === s.hallTicket);
-    if (!isExempt && state.attendance[s.hallTicket] !== false) {
-      presentees.push(s.hallTicket.slice(-2));
-    }
-  });
-
   // Absentees list
   const absentees = [];
   activeStudents.forEach(s => {
@@ -885,23 +876,19 @@ function generateReportText() {
     const exemptedStr = state.specialPermissions.map(p => {
       return `${p.hallTicket.slice(-2)} (${p.type})`;
     }).join(", ");
-    permissionSection = `PERMISSION STUDENTS:\n${exemptedStr}\n\n`;
+    permissionSection = `\nPERMISSION STUDENTS:\n${exemptedStr}\n`;
   }
 
-  // Match mockup text layout
+  // Classic formal attendance format
   return `Date: ${dateStr}
 Class Name: ${state.className}
 Total number of students: ${stats.total}
 Present: ${stats.present}
 Absent: ${stats.absent}
 
-PRESENTEES:
-${presentees.join(",") || "None"}
-
 ABSENTEES:
-${absentees.join(",") || "None"}
-
-${permissionSection}Percentage: ${stats.rate}%`;
+${absentees.join(",") || "Nil"}${permissionSection}
+Percentage: ${stats.rate}%`;
 }
 
 function handleGenerateReport() {
