@@ -15,17 +15,17 @@ let state = {
   attendance: {}, // hallTicket -> boolean
   specialPermissions: [], // Array of { hallTicket, name, type, note }
   history: [], // Array of past logs
-  mentorName: "",
-  mentorMobile: "",
-  cr1Name: "",
-  cr1Mobile: "",
-  cr2Name: "",
-  cr2Mobile: "",
-  cr3Name: "",
-  cr3Mobile: "",
-  cr4Name: "",
-  cr4Mobile: "",
-  unlocked: false
+  mentorName: "Chandrashekar",
+  mentorMobile: "+91 77994 06422",
+  cr1Name: "Sunil",
+  cr1Mobile: "+91 80198 13064",
+  cr2Name: "Kavya",
+  cr2Mobile: "+91 80962 20090",
+  cr3Name: "Shruthi",
+  cr3Mobile: "+91 84639 55053",
+  cr4Name: "harish kandi",
+  cr4Mobile: "6303138807",
+  unlocked: true
 };
 
 // Global students database reference (loaded from students.js)
@@ -287,7 +287,7 @@ function loadData() {
     state.attendance = parsed.attendance || {};
     state.specialPermissions = parsed.specialPermissions || [];
     state.history = parsed.history || [];
-    state.unlocked = parsed.unlocked || false;
+    state.unlocked = true; // Always unlocked now
 
     // Apply UI elements
     setTheme(state.theme);
@@ -325,16 +325,16 @@ function loadClassContacts() {
     }
   } else {
     // defaults
-    state.mentorName = "chandrashekar";
-    state.mentorMobile = "1234567892";
-    state.cr1Name = "harish";
-    state.cr1Mobile = "6303138807";
-    state.cr2Name = "";
-    state.cr2Mobile = "";
-    state.cr3Name = "";
-    state.cr3Mobile = "";
-    state.cr4Name = "";
-    state.cr4Mobile = "";
+    state.mentorName = "Chandrashekar";
+    state.mentorMobile = "+91 77994 06422";
+    state.cr1Name = "Sunil";
+    state.cr1Mobile = "+91 80198 13064";
+    state.cr2Name = "Kavya";
+    state.cr2Mobile = "+91 80962 20090";
+    state.cr3Name = "Shruthi";
+    state.cr3Mobile = "+91 84639 55053";
+    state.cr4Name = "harish kandi";
+    state.cr4Mobile = "6303138807";
   }
   renderContacts();
 }
