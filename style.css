@@ -430,8 +430,8 @@ select {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
+  width: 52px;
+  height: 52px;
   color: var(--primary);
   transition: width var(--transition-normal), height var(--transition-normal);
 }
@@ -1960,6 +1960,7 @@ select {
 .btn-outline.success { color: var(--success); border-color: var(--success-border); }
 .btn-outline.danger { color: var(--danger); border-color: var(--danger-border); }
 .btn-outline.warning { color: var(--warning); border-color: var(--warning-border); }
+.btn-outline.primary { color: var(--primary); border-color: rgba(37, 99, 235, 0.35); }
 
 .btn-block {
   width: 100%;

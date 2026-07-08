@@ -72,6 +72,7 @@ const btnStudentsInvert = document.getElementById("btn-students-invert");
 const btnStudentsGenerate = document.getElementById("btn-students-generate");
 const btnStudentsCopy = document.getElementById("btn-students-copy");
 const btnStudentsWhatsapp = document.getElementById("btn-students-whatsapp");
+const btnStudentsPrintOfficial = document.getElementById("btn-students-print-official");
 const studentsReportCard = document.getElementById("students-report-card");
 const studentsReportText = document.getElementById("students-report-text");
 const studentsSearchInput = document.getElementById("students-search-input");
@@ -98,6 +99,7 @@ const btnCopyReport = document.getElementById("btn-copy-report");
 const btnWhatsappShare = document.getElementById("btn-whatsapp-share");
 const btnDownloadTxt = document.getElementById("btn-download-txt");
 const btnPrintReport = document.getElementById("btn-print-report");
+const btnPrintOfficial = document.getElementById("btn-print-official");
 
 // Settings tab elements
 const settingsDisplayClassname = document.getElementById("settings-display-classname");
@@ -889,6 +891,243 @@ ${absentees.join(",") || "Nil"}${permissionSection}
 Percentage: ${stats.rate}%`;
 }
 
+function getFormattedDateShort(dateVal) {
+  const d = new Date(dateVal);
+  const day = d.getDate();
+  const month = d.getMonth() + 1;
+  const year = String(d.getFullYear()).slice(-2);
+  return `${day}/${month}/${year}`;
+}
+
+function generateOfficialAbsenteeReport() {
+  const dateStr = getFormattedDateShort(state.date);
+
+  // Normalize Class Name to uppercase and hyphenated, e.g. "IV-CSE-B"
+  const formattedClassName = state.className
+    .toUpperCase()
+    .replace(/\s+/g, '-')
+    .replace(/-+-/g, '-')
+    .replace(/^-|-$/g, '');
+
+  // Get absentees
+  const absentees = [];
+  activeStudents.forEach(s => {
+    const isExempt = state.specialPermissions.some(p => p.hallTicket === s.hallTicket);
+    if (!isExempt && state.attendance[s.hallTicket] === false) {
+      absentees.push(s);
+    }
+  });
+
+  // Sort by roll number/hall ticket number
+  absentees.sort((a, b) => a.hallTicket.localeCompare(b.hallTicket));
+
+  let tableRows = "";
+  if (absentees.length === 0) {
+    tableRows = `<tr><td colspan="3" style="text-align: center; font-style: italic; color: #64748b; padding: 20px;">No Absentees (Nil)</td></tr>`;
+  } else {
+    absentees.forEach((student, index) => {
+      tableRows += `
+        <tr>
+          <td>${index + 1}</td>
+          <td>${student.hallTicket}</td>
+          <td>${student.name.toUpperCase()}</td>
+        </tr>
+      `;
+    });
+  }
+
+  const printWindow = window.open("", "_blank");
+  if (!printWindow) {
+    showToast("⚠️ Popup blocker prevented opening print window. Please allow popups.", "error");
+    return;
+  }
+
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>${formattedClassName} ABSENTEES LIST - ${dateStr}</title>
+      <base href="${window.location.href}">
+      <style>
+        * {
+          box-sizing: border-box;
+        }
+        
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+          margin: 0;
+          padding: 0;
+          color: #000;
+          background-color: #f1f5f9;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        
+        .no-print-bar {
+          background-color: #2563eb;
+          color: white;
+          padding: 12px 20px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border-radius: 0;
+          margin-bottom: 0;
+          font-size: 13px;
+          font-weight: 500;
+          font-family: 'Poppins', sans-serif;
+          box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+          position: sticky;
+          top: 0;
+          z-index: 100;
+        }
+        
+        .print-btn {
+          background-color: white;
+          color: #2563eb;
+          border: none;
+          padding: 6px 14px;
+          font-weight: 600;
+          border-radius: 4px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .print-btn:hover {
+          background-color: #f8fafc;
+          transform: translateY(-1px);
+        }
+
+        .report-container {
+          max-width: 800px;
+          margin: 30px auto;
+          background-color: #fff;
+          padding: 40px;
+          box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
+          border: 1px solid #cbd5e1;
+          border-radius: 4px;
+        }
+        
+        .header-banner {
+          width: 100%;
+          text-align: center;
+          margin-bottom: 20px;
+        }
+        
+        .header-banner img {
+          max-width: 100%;
+          height: auto;
+        }
+        
+        .title-banner {
+          background-color: #f8fafc;
+          border: 1px solid #cbd5e1;
+          text-align: center;
+          padding: 10px;
+          font-size: 14px;
+          font-weight: bold;
+          letter-spacing: 0.5px;
+          margin-bottom: 20px;
+          color: #000;
+          text-transform: uppercase;
+        }
+        
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-top: 10px;
+        }
+        
+        th, td {
+          border: 1px solid #cbd5e1;
+          padding: 10px 12px;
+          text-align: left;
+          font-size: 13px;
+        }
+        
+        th {
+          background-color: #f8fafc;
+          color: #000;
+          font-weight: bold;
+          text-transform: uppercase;
+          font-size: 12px;
+          letter-spacing: 0.5px;
+        }
+        
+        td {
+          color: #000;
+          background-color: #fff;
+        }
+        
+        @media print {
+          body {
+            background-color: #fff !important;
+            padding: 0;
+          }
+          .no-print {
+            display: none !important;
+          }
+          .report-container {
+            max-width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+          }
+          .title-banner {
+            background-color: #f8fafc !important;
+            border-color: #cbd5e1 !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+          th {
+            background-color: #f8fafc !important;
+            border-color: #cbd5e1 !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+          td {
+            background-color: #fff !important;
+            border-color: #cbd5e1 !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="no-print-bar no-print">
+        <span>📄 GNIT Absentees Sheet Preview. Ready to print or save as PDF.</span>
+        <button class="print-btn" onclick="window.print()">Print / Save PDF</button>
+      </div>
+      <div class="report-container">
+        <div class="header-banner">
+          <img src="gnit logo.png" alt="GNIT Logo Banner">
+        </div>
+        <div class="title-banner">
+          ${formattedClassName} ABSENTEES LIST - ${dateStr}
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 12%; text-align: center;">S. No.</th>
+              <th style="width: 38%;">Roll Number</th>
+              <th style="width: 50%;">Name</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${tableRows}
+          </tbody>
+        </table>
+      </div>
+    </body>
+    </html>
+  `);
+  printWindow.document.close();
+}
+
 function handleGenerateReport() {
   triggerHaptic();
   const text = generateReportText();
@@ -1019,6 +1258,11 @@ function initEventListeners() {
     triggerHaptic();
     const text = encodeURIComponent(studentsReportText ? studentsReportText.textContent : generateReportText());
     window.open(`https://api.whatsapp.com/send?text=${text}`, "_blank");
+  });
+
+  btnStudentsPrintOfficial.addEventListener("click", () => {
+    triggerHaptic();
+    generateOfficialAbsenteeReport();
   });
 
   // Student Search input keyup
@@ -1220,6 +1464,11 @@ function initEventListeners() {
   btnPrintReport.addEventListener("click", () => {
     triggerHaptic();
     window.print();
+  });
+
+  btnPrintOfficial.addEventListener("click", () => {
+    triggerHaptic();
+    generateOfficialAbsenteeReport();
   });
 
   // Mock Settings Utilities
