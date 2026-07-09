@@ -3,6 +3,14 @@
  * Full Single Page Application (SPA) Controller with top/bottom responsive nav tabs.
  */
 
+// Helper for local date string (YYYY-MM-DD)
+function getLocalDateString(d = new Date()) {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const date = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${date}`;
+}
+
 // Application State
 let state = {
   activeTab: "home",
@@ -10,7 +18,7 @@ let state = {
   class: "CSE",
   section: "B",
   className: "IV CSE - B",
-  date: new Date().toISOString().split('T')[0], // Defaults to today
+  date: getLocalDateString(), // Defaults to today (local time)
   theme: "light",
   attendance: {}, // hallTicket -> boolean
   specialPermissions: [], // Array of { hallTicket, name, type, note }
@@ -284,10 +292,21 @@ function loadData() {
     state.class = parsed.class || "CSE";
     state.section = parsed.section || "B";
     state.className = parsed.className || "IV CSE - B";
-    state.date = parsed.date || state.date;
+
+    // If the saved date is not today, it's a new day! Reset attendance/permissions
+    const todayStr = getLocalDateString();
+    if (parsed.date && parsed.date !== todayStr) {
+      state.date = todayStr;
+      state.attendance = {};
+      state.specialPermissions = [];
+      saveData();
+    } else {
+      state.date = parsed.date || todayStr;
+      state.attendance = parsed.attendance || {};
+      state.specialPermissions = parsed.specialPermissions || [];
+    }
+
     state.theme = parsed.theme || "light";
-    state.attendance = parsed.attendance || {};
-    state.specialPermissions = parsed.specialPermissions || [];
     state.history = parsed.history || [];
     state.unlocked = true; // Always unlocked now
 
@@ -861,6 +880,15 @@ function generateReportText() {
   const stats = calculateStats();
   const dateStr = formatDateString(state.date);
 
+  // Get current local time formatted beautifully, e.g., 12:30:15 PM
+  const now = new Date();
+  const hours = now.getHours();
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const seconds = String(now.getSeconds()).padStart(2, '0');
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  const displayHours = hours % 12 || 12;
+  const timeStr = `${displayHours}:${minutes}:${seconds} ${ampm}`;
+
   // Absentees list
   const absentees = [];
   activeStudents.forEach(s => {
@@ -881,6 +909,7 @@ function generateReportText() {
 
   // Classic formal attendance format
   return `Date: ${dateStr}
+Time: ${timeStr}
 Class Name: ${state.className}
 Total number of students: ${stats.total}
 Present: ${stats.present}
@@ -901,6 +930,14 @@ function getFormattedDateShort(dateVal) {
 
 function generateOfficialAbsenteeReport() {
   const dateStr = getFormattedDateShort(state.date);
+
+  // Get current local time formatted beautifully, e.g., 12:30 PM
+  const now = new Date();
+  const hours = now.getHours();
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  const displayHours = hours % 12 || 12;
+  const timeStr = `${displayHours}:${minutes} ${ampm}`;
 
   // Normalize Class Name to uppercase and hyphenated, e.g. "IV-CSE-B"
   const formattedClassName = state.className
@@ -948,7 +985,7 @@ function generateOfficialAbsenteeReport() {
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>${formattedClassName} ABSENTEES LIST - ${dateStr}</title>
+      <title>${formattedClassName} ABSENTEES LIST - ${dateStr} ${timeStr}</title>
       <base href="${window.location.href}">
       <style>
         * {
@@ -1107,7 +1144,7 @@ function generateOfficialAbsenteeReport() {
           <img src="gnit logo.png" alt="GNIT Logo Banner">
         </div>
         <div class="title-banner">
-          ${formattedClassName} ABSENTEES LIST - ${dateStr}
+          ${formattedClassName} ABSENTEES LIST - ${dateStr} (${timeStr})
         </div>
         <table>
           <thead>
@@ -1137,11 +1174,20 @@ function handleGenerateReport() {
   // Auto-scroll to report box
   reportSection.scrollIntoView({ behavior: "smooth" });
   
-  // Add to history list if not duplicate
+  // Add to history list or update if it exists for this class today
   const dateStr = formatDateString(state.date);
-  const exists = state.history.some(h => h.date === dateStr && h.className === state.className);
-  if (!exists) {
-    const stats = calculateStats();
+  const existsIndex = state.history.findIndex(h => h.date === dateStr && h.className === state.className);
+  const stats = calculateStats();
+  
+  if (existsIndex !== -1) {
+    // Update existing record
+    state.history[existsIndex].present = stats.present;
+    state.history[existsIndex].absent = stats.absent;
+    state.history[existsIndex].permission = stats.permission;
+    state.history[existsIndex].rate = stats.rate;
+    state.history[existsIndex].reportText = text;
+  } else {
+    // Add new history entry
     state.history.unshift({
       id: Date.now(),
       date: dateStr,
@@ -1152,9 +1198,10 @@ function handleGenerateReport() {
       rate: stats.rate,
       reportText: text
     });
-    saveData();
-    renderHistoryLogs();
   }
+  
+  saveData();
+  renderHistoryLogs();
 
   showToast("📊 Attendance report generated!");
 }
@@ -1513,6 +1560,30 @@ function setTheme(theme) {
 
 function updateClock() {
   const now = new Date();
+
+  // Check if date has changed in real-time (overnight usage)
+  const todayStr = getLocalDateString(now);
+  if (state.date !== todayStr) {
+    state.date = todayStr;
+    state.attendance = {};
+    state.specialPermissions = [];
+    saveData();
+    
+    // Refresh UI
+    updateCounts();
+    renderStudents();
+    renderPermissionCards();
+    renderCalendarStrip();
+    
+    // Auto-update report text preview if it's open/visible
+    const reportContent = generateReportText();
+    if (reportTextPreview) {
+      reportTextPreview.textContent = reportContent;
+    }
+    if (studentsReportText) {
+      studentsReportText.textContent = reportContent;
+    }
+  }
   
   // Date format: 07 May 2025, Wed
   if (headerDateEl) {
@@ -1609,7 +1680,7 @@ function renderCalendarStrip() {
 
     const dayItem = document.createElement("div");
     dayItem.className = `calendar-day-item${i === 0 ? " active" : ""}`;
-    dayItem.setAttribute("data-date", d.toISOString().split('T')[0]);
+    dayItem.setAttribute("data-date", getLocalDateString(d));
 
     dayItem.innerHTML = `
       <span>${days[d.getDay()]}</span>
